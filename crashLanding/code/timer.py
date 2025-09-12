@@ -32,15 +32,3 @@ class Timer:
 		elapsed = current_time - self.start_time
 		remaining = self.duration - elapsed
 		return remaining
-"""
-	def time_taken(self):
-		current_time = get_ticks()
-		return (current_time - self.start_time)
-
-	def time_left(self):
-		current_time = get_ticks()
-		elapsed = current_time - self.start_time
-		remaining = self.duration - elapsed
-		return max(remaining,0)
-"""
-

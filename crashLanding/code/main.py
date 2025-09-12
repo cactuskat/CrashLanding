@@ -53,7 +53,6 @@ class Game:
 				self.won_game = True
 				self.game_duration = self.game_timer.time_left()
 				self.cutscenes.play_win_screen(self.game_duration)
-				#self.game_timer.deactivate()
 			else: #otherwise, play next level
 				self.level_count += 1
 				self.bg_music.stop()
@@ -62,7 +61,7 @@ class Game:
 
 	def setup_bg_music(self):
 		bg_music_list = ["Crimson_Drive.wav","Zero_Respect.wav","Fallen_in_Battle.wav"]  
-		self.bg_music = pygame.mixer.Sound(join("..","audio",bg_music_list[self.level_count]))
+		self.bg_music = load_audio(bg_music_list[self.level_count])
 		self.bg_music.set_volume(0.5)
 		self.bg_music.play(-1)
 

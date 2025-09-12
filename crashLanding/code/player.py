@@ -2,14 +2,14 @@ from settings import *
 from timer import Timer
 from os import listdir
 from math import sin
-
+from utils import load_audio,load_image,load_sprite,load_asset
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self, pos, groups,col_group):
 		super().__init__(groups)
 
 		#image
-		self.frames = self.load_asset()
+		self.frames = self.get_images()
 		self.frame_index = 0
 		self.facing_right = True
 		self.state = "idle"
@@ -45,13 +45,38 @@ class Player(pygame.sprite.Sprite):
 		self.jump_count = 0
 
 		#audio
-		self.jump_sound = pygame.mixer.Sound("../audio/jump.wav")
-		self.fruit_sound = pygame.mixer.Sound("../audio/fruit.wav")
+		self.jump_sound = load_audio("jump.wav")
+		self.fruit_sound = load_audio("fruit.wav")
 		
+
+	def get_images(self):
+		width, height = 32, 32
+		folder = ("player",)  # path components relative to "images"
+		all_sprites = {}
+
+		# listdir expects a filesystem path, so we use load_asset to get the absolute path
+		path = load_asset("images", *folder)
+
+		for image_name in listdir(path):
+			# Use load_image to load the sprite sheet
+			sprite_sheet = load_image("player", image_name).convert_alpha()
+
+			# Split the sheet into frames
+			sprites = [
+				pygame.transform.scale2x(
+					sprite_sheet.subsurface(i * width, 0, width, height)
+				)
+				for i in range(sprite_sheet.get_width() // width)
+			]
+
+			base_name = image_name.replace(".png", "")
+			all_sprites[base_name] = sprites
+		return all_sprites
+	
 	#load in all images of the player
-	def load_asset(self):
+	def load_player_sprites(self):
 		width,height = 32,32
-		path = join("..","images","player")
+		path = join("..","..","images","player")
 		all_sprites = {}
 		for image in listdir(path):
 			full_img_path = join(path,image)

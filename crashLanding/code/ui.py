@@ -1,13 +1,14 @@
 from settings import * 
+from utils import load_font
 
 class UI:
     def __init__(self):
         self.window = pygame.display.get_surface()
 
         #fonts
-        self.font = pygame.font.Font(join("..","images","ui","runescape_uf.ttf"),40)
-        self.font_back = pygame.font.Font(join("..","images","ui","runescape_uf.ttf"),50)
-        self.font_small = pygame.font.Font(join("..","images","ui","runescape_uf.ttf"),20)
+        self.font = load_font(40,"runescape_uf.ttf")
+        self.font_back = load_font(50,"runescape_uf.ttf")
+        self.font_small = load_font(20,"runescape_uf.ttf")
 
     def print(self,text,x,y,reg_font=True):
         text_surface = None

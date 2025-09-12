@@ -3,6 +3,7 @@ from player import Player
 import math
 from os import listdir
 from math import sin
+from utils import load_image,load_sprite,load_asset
 
 BLOCK_SIZE = 96
 CHARA_WIDTH,CHARA_HEIGHT = 64,64
@@ -20,15 +21,17 @@ class Object(pygame.sprite.Sprite):
 		self.window.blit(self.image, (self.rect.x - offset_x, self.rect.y))
 
 	#still image
-	def get_image(self,width,height,path,scale=2):
-		sprite_sheet = pygame.image.load(path).convert_alpha()
+	def get_image(self,width,height,*path,scale=2):
+		sprite_sheet = load_sprite(*path)
+		#sprite_sheet = pygame.image.load(path).convert_alpha()
 		#sprite = pygame.transform.scale_by(sprite_sheet.subsurface(0,0,width, height),scale)
 		sprite = pygame.transform.scale(sprite_sheet.subsurface(0,0,width,height),(width*scale,height*scale))
 		return sprite
 	
 	#animated
-	def get_frames(self,width,height,path,scale=2):
-		sprite_sheet = pygame.image.load(path).convert_alpha()
+	def get_frames(self,width,height,*path,scale=2):
+		sprite_sheet = load_sprite(*path)
+		#sprite_sheet = pygame.image.load(path).convert_alpha()
 		#frames = [pygame.transform.scale_by(sprite_sheet.subsurface(i * width, 0,width, height),2) 
 		#	  for i in range(sprite_sheet.get_width() // width)]
 		frames = [
@@ -47,7 +50,8 @@ class Block(Object):
 		self.old_rect = self.rect.copy()
 
 	def get_block(self):
-		block_sprite_sheet = pygame.image.load("../images/terrain/terrain.png").convert_alpha()
+		block_sprite_sheet = load_sprite("terrain","terrain.png")
+		#block_sprite_sheet = pygame.image.load("../images/terrain/terrain.png").convert_alpha()
 		surface = pygame.Surface((BLOCK_SIZE,BLOCK_SIZE), pygame.SRCALPHA, 32)
 		#grass block starts 96 pixels from the left
 		rect = pygame.Rect(96, self.current_lvl * 64, BLOCK_SIZE,BLOCK_SIZE)
@@ -63,7 +67,8 @@ class Pipe(Object):
 
 	def get_img(self,current_lvl):
 		width,height = 96,10
-		sprite_sheet = pygame.image.load("../images/terrain/terrain.png").convert_alpha()
+		sprite_sheet = load_sprite("terrain","terrain.png")
+		#sprite_sheet = pygame.image.load("../images/terrain/terrain.png").convert_alpha()
 		surface = pygame.Surface((width,height), pygame.SRCALPHA, 32)
 		rect = pygame.Rect(272,current_lvl * 16,width,height)
 		surface.blit(sprite_sheet,(0,0),rect)
@@ -85,7 +90,8 @@ class Fruit(Object):
 		self.flicker_mode = False
         
 	def get_images(self):
-		sprite_sheet = pygame.image.load(join("..","images","fruit",f"{self.name}.png")).convert_alpha()
+		sprite_sheet = load_sprite("fruit",f"{self.name}.png")
+		#sprite_sheet = pygame.image.load(join("..","images","fruit",f"{self.name}.png")).convert_alpha()
 		sprites = []
 		for i in range(sprite_sheet.get_width() // 32):
 			surface = pygame.Surface((32,32), pygame.SRCALPHA, 32)
@@ -123,7 +129,7 @@ class Saw(Object):
 
 		#animation
 		#self.frames = self.get_images()
-		self.frames= self.get_frames(38,38,"../images/traps/saw.png")
+		self.frames= self.get_frames(38,38,"traps","saw.png")
 		self.frame_index = 0
 		self.image = self.frames[self.frame_index]
 
@@ -167,8 +173,8 @@ class Heart(Object):
 	def __init__(self,pos,group,full = True):
 		super().__init__(pos,group)
 		img = "heart_full.png" if full else "heart_empty.png"
-		path = join("..","images","ui",img)
-		self.image = self.get_image(16,14,path,3)
+		path = join("ui",img)
+		self.image = self.get_image(16,14,"ui",img,scale=3)
 
 	#def get_image(self,full):
 	#	img = "heart_full.png" if full else "heart_empty.png"
@@ -190,10 +196,34 @@ class Friend(Object):
 		self.name = self.friend_list[current_level]
 		self.image = self.frames[self.name][self.frame_index]
 		self.rect = self.image.get_rect(topleft = (self.rect.x, self.rect.y))
+	
+	def get_images(self):
+		width, height = 32, 32
+		folder = ("friend",)  # path components relative to "images"
+		all_sprites = {}
 
+		# listdir expects a filesystem path, so we use load_asset to get the absolute path
+		path = load_asset("images", *folder)
+
+		for image_name in listdir(path):
+			# Use load_image to load the sprite sheet
+			sprite_sheet = load_image("friend", image_name).convert_alpha()
+
+			# Split the sheet into frames
+			sprites = [
+				pygame.transform.scale2x(
+					sprite_sheet.subsurface(i * width, 0, width, height)
+				)
+				for i in range(sprite_sheet.get_width() // width)
+			]
+
+			base_name = image_name.replace(".png", "")
+			all_sprites[base_name] = sprites
+		return all_sprites
+	'''
 	def get_images(self):
 		width,height = 32,32
-		path = join("..","images","friend")
+		path = join("..","..","images","friend")
 		all_sprites = {}
 		for image in listdir(path):
 			full_img_path = join(path,image)
@@ -203,7 +233,7 @@ class Friend(Object):
 			base_name = image.replace(".png","")
 			all_sprites[base_name] = sprites
 		return all_sprites
-
+	'''
 	def animate(self,dt):
 		self.frame_index += ANIMATION_SPEED * dt
 		self.image = self.frames[self.name][int(self.frame_index % len(self.frames[self.name]))]
@@ -216,7 +246,7 @@ class Friend(Object):
 class Spikes(Object):
 	def __init__(self,pos,groups,flip=False):
 		super().__init__(pos,groups)
-		self.image = self.get_image(48,8,"../images/traps/spikes.png")
+		self.image = self.get_image(48,8,"traps","spikes.png")
 		self.image = self.image if not flip else pygame.transform.flip(self.image, False, True)
 		self.rect = self.image.get_rect(bottomleft = pos) if not flip else self.image.get_rect(topleft = pos)
 		self.old_rect = self.rect.copy()
@@ -227,7 +257,7 @@ class Platform(Object):
 		self.is_platform = True
 		
 		#animation
-		self.frames = self.get_frames(32,10,"../images/terrain/platform.png")
+		self.frames = self.get_frames(32,10,"terrain","platform.png")
 		self.frame_index = 0
 		self.image = self.frames[self.frame_index]
 
@@ -267,7 +297,7 @@ class Platform(Object):
 class Oxygen(Object):
 	def __init__(self,pos,group):
 		super().__init__(pos,group)
-		self.image = self.get_image(21,19,"../images/ui/oxygen.png",3)
+		self.image = self.get_image(21,19,"ui","oxygen.png",scale=3)
 
 	def flicker(self):
 		if sin(pygame.time.get_ticks() / 25) >= 0:
@@ -301,7 +331,8 @@ class Enemy(Object):
 
 	def get_images(self):
 		width,height = 32,32
-		sprite_sheet = pygame.image.load("../images/traps/frog.png").convert_alpha()
+		sprite_sheet = load_sprite("traps","frog.png")
+		#sprite_sheet = pygame.image.load("../images/traps/frog.png").convert_alpha()
 		sprites = []
 		for i in range(sprite_sheet.get_width() // width):
 			surface = pygame.Surface((width,height), pygame.SRCALPHA, 32)

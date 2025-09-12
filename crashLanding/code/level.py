@@ -1,7 +1,7 @@
 from settings import *
 from player import Player
 from objects import *
-
+from utils import load_image,load_sprite
 
 class Level:
 	def __init__(self, current_level,ui):
@@ -189,7 +189,7 @@ class Level:
 
 	def get_bg_tiles(self):
 		bg_list = ["Blue.png","Pink.png"]
-		img = pygame.image.load(join("..","images","background",bg_list[self.current_level]))
+		img = load_image("background",bg_list[self.current_level])
 		_, _, tile_width, tile_height = img.get_rect() 
 		tiles = []
         

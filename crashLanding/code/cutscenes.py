@@ -1,4 +1,5 @@
 from settings import *
+from utils import *
 
 class Cutscenes:
     def __init__(self,ui):
@@ -21,8 +22,8 @@ class Cutscenes:
                       "Hint: Pineapples reverse control"]
 
         #audio
-        self.talk = pygame.mixer.Sound("../audio/talk.wav")
-        self.talk_death = pygame.mixer.Sound("../audio/talk_death.wav")
+        self.talk = load_audio("talk.wav")
+        self.talk_death = load_audio("talk_death.wav")
 
     #print credits to screen
     def print_credits(self):
@@ -80,5 +81,3 @@ class Cutscenes:
         self.window.fill((0,0,0))
         self.ui.print("suit heal activating..",WINDOW_WIDTH// 2, WINDOW_HEIGHT//2)
         self.ui.print("(press R to restart)",WINDOW_WIDTH// 2, (WINDOW_HEIGHT//2) + 50,False)
-       
-

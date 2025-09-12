@@ -23,19 +23,15 @@ class Object(pygame.sprite.Sprite):
 	#still image
 	def get_image(self,width,height,*path,scale=2):
 		sprite_sheet = load_sprite(*path)
-		#sprite_sheet = pygame.image.load(path).convert_alpha()
-		#sprite = pygame.transform.scale_by(sprite_sheet.subsurface(0,0,width, height),scale)
 		sprite = pygame.transform.scale(sprite_sheet.subsurface(0,0,width,height),(width*scale,height*scale))
 		return sprite
 	
 	#animated
 	def get_frames(self,width,height,*path,scale=2):
 		sprite_sheet = load_sprite(*path)
-		#sprite_sheet = pygame.image.load(path).convert_alpha()
-		#frames = [pygame.transform.scale_by(sprite_sheet.subsurface(i * width, 0,width, height),2) 
-		#	  for i in range(sprite_sheet.get_width() // width)]
 		frames = [
-			pygame.transform.scale(sprite_sheet.subsurface(i * width,0,width,height),(width*scale,height*scale)) for i in range(sprite_sheet.get_width() // width)
+			pygame.transform.scale(sprite_sheet.subsurface(i * width,0,width,height),(width*scale,height*scale)) 
+			for i in range(sprite_sheet.get_width() // width)
 		]
 		return frames
 
@@ -44,14 +40,13 @@ class Block(Object):
 		super().__init__(pos,groups)
 		self.current_lvl = current_lvl
 		self.image = pygame.Surface((BLOCK_SIZE,BLOCK_SIZE))
-		block = self.get_block()
+		block = self.get_image()
 		self.image.blit(block,(0,0))
 		self.rect = self.image.get_rect(topleft = pos)
 		self.old_rect = self.rect.copy()
 
-	def get_block(self):
+	def get_image(self):
 		block_sprite_sheet = load_sprite("terrain","terrain.png")
-		#block_sprite_sheet = pygame.image.load("../images/terrain/terrain.png").convert_alpha()
 		surface = pygame.Surface((BLOCK_SIZE,BLOCK_SIZE), pygame.SRCALPHA, 32)
 		#grass block starts 96 pixels from the left
 		rect = pygame.Rect(96, self.current_lvl * 64, BLOCK_SIZE,BLOCK_SIZE)
@@ -61,14 +56,13 @@ class Block(Object):
 class Pipe(Object):
 	def __init__(self,pos,groups,current_lvl):
 		super().__init__(pos,groups)
-		self.image = self.get_img(current_lvl)
+		self.image = self.get_image(current_lvl)
 		self.rect = self.image.get_rect(topleft = pos)
 		self.old_rect = self.rect.copy()
 
-	def get_img(self,current_lvl):
+	def get_image(self,current_lvl):
 		width,height = 96,10
 		sprite_sheet = load_sprite("terrain","terrain.png")
-		#sprite_sheet = pygame.image.load("../images/terrain/terrain.png").convert_alpha()
 		surface = pygame.Surface((width,height), pygame.SRCALPHA, 32)
 		rect = pygame.Rect(272,current_lvl * 16,width,height)
 		surface.blit(sprite_sheet,(0,0),rect)
@@ -79,7 +73,7 @@ class Fruit(Object):
 	def __init__(self,pos,groups,name):
 		super().__init__(pos,groups)
 		self.name = name
-		self.frames = self.get_images()
+		self.frames = self.get_frames()
 		self.frame_index = 0
 		self.image = self.frames[self.frame_index]
 		self.rect = self.image.get_rect(topleft=pos)
@@ -89,9 +83,8 @@ class Fruit(Object):
 		self.old_rect = self.rect.copy()
 		self.flicker_mode = False
         
-	def get_images(self):
+	def get_frames(self):
 		sprite_sheet = load_sprite("fruit",f"{self.name}.png")
-		#sprite_sheet = pygame.image.load(join("..","images","fruit",f"{self.name}.png")).convert_alpha()
 		sprites = []
 		for i in range(sprite_sheet.get_width() // 32):
 			surface = pygame.Surface((32,32), pygame.SRCALPHA, 32)
@@ -173,16 +166,7 @@ class Heart(Object):
 	def __init__(self,pos,group,full = True):
 		super().__init__(pos,group)
 		img = "heart_full.png" if full else "heart_empty.png"
-		path = join("ui",img)
 		self.image = self.get_image(16,14,"ui",img,scale=3)
-
-	#def get_image(self,full):
-	#	img = "heart_full.png" if full else "heart_empty.png"
-	#	path = join("images","ui",img)
-	#	image = pygame.image.load(path).convert_alpha()
-	#	surface = pygame.Surface((16,14), pygame.SRCALPHA, 32)
-	#	surface.blit(image,(0,0), pygame.Rect(0,0,16,14))
-	#	return pygame.transform.scale_by(surface, 3)
 	
 class Friend(Object):
 	def __init__(self,pos,groups,current_level,facing_right=True):
@@ -332,7 +316,6 @@ class Enemy(Object):
 	def get_images(self):
 		width,height = 32,32
 		sprite_sheet = load_sprite("traps","frog.png")
-		#sprite_sheet = pygame.image.load("../images/traps/frog.png").convert_alpha()
 		sprites = []
 		for i in range(sprite_sheet.get_width() // width):
 			surface = pygame.Surface((width,height), pygame.SRCALPHA, 32)

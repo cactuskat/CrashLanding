@@ -37,8 +37,8 @@ OR
 - [X] Executable
 - [ ] Clean Code Clutter
 - [ ] Level Making using Json
-- [ ] Enchane visuals
-- [ ] Implement setting menu for volume controls
+- [ ] Enchance visuals
+- [ ] Implement settings menu for volume controls
 - [ ] Home screen
   - [ ] Highest Score
   - [ ] Level Selection

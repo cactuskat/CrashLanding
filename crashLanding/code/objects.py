@@ -21,13 +21,13 @@ class Object(pygame.sprite.Sprite):
 		self.window.blit(self.image, (self.rect.x - offset_x, self.rect.y))
 
 	#still image
-	def get_image(self,width,height,*path,scale=2):
+	def get_image(self,width:int,height:int,*path,scale:int = 2):
 		sprite_sheet = load_sprite(*path)
 		sprite = pygame.transform.scale(sprite_sheet.subsurface(0,0,width,height),(width*scale,height*scale))
 		return sprite
 	
 	#animated
-	def get_frames(self,width,height,*path,scale=2):
+	def get_frames(self,width:int,height:int,*path,scale:int = 2):
 		sprite_sheet = load_sprite(*path)
 		frames = [
 			pygame.transform.scale(sprite_sheet.subsurface(i * width,0,width,height),(width*scale,height*scale)) 
@@ -61,13 +61,12 @@ class Pipe(Object):
 		self.old_rect = self.rect.copy()
 
 	def get_image(self,current_lvl):
-		width,height = 96,10
+		width,height = 48, 5
 		sprite_sheet = load_sprite("terrain","terrain.png")
 		surface = pygame.Surface((width,height), pygame.SRCALPHA, 32)
 		rect = pygame.Rect(272,current_lvl * 16,width,height)
 		surface.blit(sprite_sheet,(0,0),rect)
 		return pygame.transform.scale2x(surface)
-
 
 class Fruit(Object):
 	def __init__(self,pos,groups,name):

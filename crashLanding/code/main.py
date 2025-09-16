@@ -3,12 +3,17 @@ from level import Level
 from cutscenes import *
 from timer import Timer
 from ui import *
+from utils import load_image
 
 class Game:
 	def __init__(self):
 		pygame.init()
 		self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 		pygame.display.set_caption('Crash Landing')
+		icon = load_image("thumbnails","icon.png")
+		pygame.display.set_icon(icon)
+
+		#clock
 		self.clock = pygame.time.Clock()
 
 		#ui

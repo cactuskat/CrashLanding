@@ -34,7 +34,6 @@ class Game:
 
 
 		self.current_level = Level(self.level_count,self.ui)
-		self.debug = False
 		
 	def check_game_over(self):
 		if self.game_timer.time_left() < (GAMETIME // 5):
@@ -67,8 +66,7 @@ class Game:
 		self.bg_music.play(-1)
 
 	def run(self):
-		print("works!")
-		while not self.debug:
+		while True:
 			dt = self.clock.tick() / 1000
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:

@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
 		self.old_rect = self.rect.copy()
 		self.col_group = col_group
 		self.on_surface = {"floor": False}
-		self.timers = {"hit" :Timer (1525)}
+		self.timers = {"hit" :Timer (1000)}
 
 		# movement 
 		self.direction = vector()
@@ -74,7 +74,7 @@ class Player(pygame.sprite.Sprite):
 			all_sprites[state] = frames
 		return all_sprites
 	
-	def animate(self,dt):
+	def animate(self,dt:float):
 		""" 
 		Change sprite frame according to the directional movement and action 
 		
@@ -107,32 +107,32 @@ class Player(pygame.sprite.Sprite):
 		"""
 		Update player direction depending on keyboard input
 		"""
-		if not self.timers["hit"].active:
-			keys = pygame.key.get_pressed()
-			direction_x = 0
 
-			#---horizontal movement---
-			if keys[pygame.K_RIGHT]:
-				direction_x += 1
-			if keys[pygame.K_LEFT]:
-				direction_x -= 1
+		keys = pygame.key.get_pressed()
+		direction_x = 0
 
-			if self.reverse_controls:
-				direction_x *= -1
+		#---horizontal movement---
+		if keys[pygame.K_RIGHT]:
+			direction_x += 1
+		if keys[pygame.K_LEFT]:
+			direction_x -= 1
 
-			#if not moving, face right by default	
-			if direction_x != 0:
-				self.facing_right = direction_x > 0
+		if self.reverse_controls:
+			direction_x *= -1
 
-			self.direction.x = direction_x
+		#if not moving, face right by default	
+		if direction_x != 0:
+			self.facing_right = direction_x > 0
 
-			#---vertical movement---
-			jump_key = pygame.K_UP if not self.reverse_controls else pygame.K_DOWN
+		self.direction.x = direction_x
 
-			if keys[jump_key] and not self.can_double_jump and self.jump_count < 2:
-				self.jump()
-			if not keys[jump_key]:
-				self.can_double_jump = False
+		#---vertical movement---
+		jump_key = pygame.K_UP if not self.reverse_controls else pygame.K_DOWN
+
+		if keys[jump_key] and not self.can_double_jump and self.jump_count < 2:
+			self.jump()
+		if not keys[jump_key]:
+			self.can_double_jump = False
 
 	def jump(self):
 		""" Jumps player, allows double jump if possible """
@@ -141,7 +141,7 @@ class Player(pygame.sprite.Sprite):
 		self.direction.y = - self.jump_height
 		self.jump_sound.play()
 
-	def move(self, dt):
+	def move(self, dt:float):
 		""" 
 		Moves player and checks horizontal and vertical collision 
 		
@@ -159,7 +159,7 @@ class Player(pygame.sprite.Sprite):
 		self.rect.y += self.direction.y * dt
 		self.collision("vertical")
 
-	def platform_move(self,dt):
+	def platform_move(self,dt:float):
 		"""
 		Move player with platform if on platform
 
@@ -178,8 +178,7 @@ class Player(pygame.sprite.Sprite):
 	   				and sprite.rect.colliderect(floor_rect)):
 				self.rect.topleft += sprite.direction * sprite.speed * dt
 
-	#collision handling
-	def collision(self,axis):
+	def collision(self,axis:str):
 		"""
 		Collision handling for 4 directions:left,right,up,down
 
@@ -224,14 +223,14 @@ class Player(pygame.sprite.Sprite):
 		for timer in self.fruit_timers.values():
 			timer.update()
 
-	def get_damage(self,magnitude=1):
+	def get_damage(self,magnitude:int = 1):
 		"""
 		Take damage, start hit timer, and reduce health
 
 		Parameters:
 		magnitude (int): how much heaath to lose
 		"""
-		if not self.timers["hit"].active and not self.shield:
+		if (not self.timers["hit"].active) and (not self.fruit_timers["melon"].active):
 			self.health -= magnitude
 			if not self.direction.y < 0:
 				og_jump_height = self.jump_height
@@ -242,15 +241,37 @@ class Player(pygame.sprite.Sprite):
 
 	def flicker(self):
 		""" Flicker player image with white pulsing mask """
+		if (self.timers["hit"].active) or (self.fruit_timers["melon"].active):
+			if (self.timers["hit"].active): mask_color = (0,0,0)
+			if (self.fruit_timers["melon"].active): mask_color = (255,215,0)
+			if sin(pygame.time.get_ticks() / 50) >= 0:
+				mask = pygame.mask.from_surface(self.image).to_surface(setcolor=mask_color)
+				mask.set_colorkey((0,0,0))
+				self.image = mask
+			#flicker using sine wave
+			"""
+			flicker = sin(pygame.time.get_ticks() / 50)
+			if (self.timers["hit"].active) and (flicker >= 0.5):
+				white_mask = pygame.mask.from_surface(self.image)
+				white_surface = white_mask.to_surface()
+				white_surface.set_colorkey((0,0,0))
+				self.image = white_surface
+			if (self.fruit_timers["melon"].active) and (flicker >= 0.5):
+				white_mask = pygame.mask.from_surface(self.image)
+				white_surface = white_mask.to_surface(setcolor=(255,215,0))
+				white_surface.set_colorkey((0,0,0))
+				self.image = white_surface
+			"""
+		"""
 		if self.timers["hit"].active or self.shield:
 			if sin(pygame.time.get_ticks() / 50) >= 0:
 				white_mask = pygame.mask.from_surface(self.image)
 				white_surface = white_mask.to_surface()
 				white_surface.set_colorkey((0,0,0))
 				self.image = white_surface
+		"""
 
-	#starting fruit/powerup effect
-	def powerup(self,fruit):
+	def powerup(self,fruit:str):
 		""" 
 		Start powerup of frutis effects, turn on timer if needed
 		 
@@ -263,7 +284,7 @@ class Player(pygame.sprite.Sprite):
 				self.fruit_timers[fruit].activate()
 		self.fruit_effect(fruit)
 
-	def fruit_effect(self,fruit=None):
+	def fruit_effect(self,fruit:str = None):
 		""" 
 		Apple effects of fruit to player based on chosen fruit
 
@@ -296,10 +317,16 @@ class Player(pygame.sprite.Sprite):
 		#pineapple -> reverse controls
 		self.reverse_controls = self.fruit_timers["pineapple"].active
 		#melon -> shield
-		self.shield = self.fruit_timers["melon"].active
+		#self.shield = self.fruit_timers["melon"].active
 
-	def draw(self,window,offset_x):
-		""" Draw player image on screen """
+	def draw(self,window,offset_x:int):
+		""" 
+		Draw player image on screen 
+		
+		Parameters:
+		window():
+		fruit (str):
+		"""
 		window.blit(self.image, (self.rect.x - offset_x, self.rect.y))
 
 	#update all player functions

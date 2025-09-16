@@ -1,5 +1,5 @@
 # CrashLanding
-A 2D game where you've crash-landed on an alien planet. Find your friends, collect fruit, and returnhome before your oxygen runs out.
+A 2D game where you've crash-landed on an alien planet. Find your friends, collect fruit, and return home before your oxygen runs out.
 
 ## How It's Made
 * Engine: Pygame
@@ -19,7 +19,9 @@ To get a local copy up and running follow these simple example steps:
 
 ## Installation
 1. Download crashLanding > dist > crashlanding.exe
+
 OR 
+
 1. Clone Repo
   ```sh
   git clone https://github.com/cactuskat/CrashLanding.git
@@ -28,8 +30,7 @@ OR
   ```sh
   cd crashlanding
   ```
-4.
-5. Run code within main.py
+3. Run code within main.py
 
 ## Roadmap
 - [X] Base Game

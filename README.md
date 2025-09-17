@@ -44,6 +44,14 @@ OR
   - [ ] Level Selection
 
 ## Credits
-*Thumbnail was created via ChatGPT*
+Animalese.mav : Josh Simmons(Acedio)[GitHub]
+
+Background Music : Jonathan So
+
+Sound effects : JDWasabi & Pixel Frog [itch.io]
+
+Graphics : Pixel Frog [itch.io]
+
+Thumbnail was created via ChatGPT
 
 ⚡ Made with curiosity and code

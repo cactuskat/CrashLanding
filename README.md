@@ -43,15 +43,11 @@ OR
   - [ ] Highest Score
   - [ ] Level Selection
 
-## Credits
-Animalese.mav : Josh Simmons(Acedio)[GitHub]
-
-Background Music : Jonathan So
-
-Sound effects : JDWasabi & Pixel Frog [itch.io]
-
-Graphics : Pixel Frog [itch.io]
-
+## Other Credits
+Animalese.mav : [Josh Simmons(Acedio)](https://github.com/Acedio/animalese.js)  
+Background Music : [Jonathan So](https://jonathan-so.itch.io/)  
+Sound effects : [JDWasabi](https://wasabiiii.itch.io/) & [PixelFrog](https://pixelfrog-assets.itch.io/)  
+Graphics : [PixelFrog](https://pixelfrog-assets.itch.io/)  
 Thumbnail was created via ChatGPT
 
 ⚡ Made with curiosity and code
